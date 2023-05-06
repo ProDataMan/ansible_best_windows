@@ -3,166 +3,176 @@
 In this hands-on lab, we'll install Ansible on a control node and configure two managed servers for use with Ansible. We will also create a simple inventory and run an Ansible command to verify our configuration is correct.
 
 ## Log into the control node
-Log in to the control node as `ec2-user` 
 
+Perform the following steps in the RPD session to Windows Target 1
+
+1. Launch PuTTY
+1. Load Default settings
+1. Paste ip address (provided by instructor)
+1. Click Open
+1. Click Yes to accept the cert
 
 ## Install Ansible on the Control Node
 
-To install Ansible on the control node:
+Get updates:
 
 ```
-sudo dnf install ansible-core -y
+sudo apt-get update
 ```
 
-## Configure the `ansible` user on the Control and Managed Nodes
-
-Next, we'll add a new `ansible` user to each node. This user will be used for running `ansible` tasks. 
-
-On the managed node run: 
-```
-sudo useradd ansible
-```
-
-Log in to each managed node as the `ec2-user` user and run:
+Install Python
 
 ```
-sudo useradd ansible
+sudo apt-get install -y python3-pip
 ```
 
-
-
-
-Configure the `ansible` user on the control node for ssh shared key access to the managed nodes.
-
-**Note:** Do not use a passphrase for the key pair.
-
-Create a key pair for the `ansible` user on the control host, accepting the defaults when prompted:
+Install Ansible using pip3
 
 ```
-sudo su - ansible
-ssh-keygen 
+pip3 install ansible
 ```
 
-
-
-Copy the public key to both nodes provided by the instructor:
-
-On the Control Node copy the output of:
+Reboot Ubuntu to update the path and complete Ansible setup
 
 ```
-cat /home/ansible/.ssh/id_rsa.pub
+sudo reboot
 ```
 
+> You may need to reconnect to the Ubuntu server with Putty. From the PuTTY menu select Restart Session
 
-
-Log in to each of the managed nodes, become the `ansible` user, and add the key to the `authorized_keys` file.
-
-
-Become the `ansible` user:
+Install Win RM
 
 ```
-sudo su - ansible 
+pip3 install "pywinrm>=0.3.0"
 ```
 
-Use `ssh-keygen`, accepting defaults, to create the `.ssh` directory
+Install boto3 and botocore
 
 ```
-ssh-keygen
+pip3 install boto3 botocore
 ```
 
-Now create the `authorized_keys` file and paste the copied output from above into it.
+In the VS Code Explorer pane:
 
-```
-echo "<copied output from above>" > /home/ansible/.ssh/authorized_keys
-```
+1. Right Click in the explorer pane
+1. Select `New File`
+1. Name the new file 'inventory_simple.yml'
+1. Paste the code below into the file
 
-Set the correct permissions
+    ```
+    ---
+    webservers:
+      hosts:
+        webserver1:
+          ansible_host: <ip address provided>
+          ansible_user: Administrator
+          ansible_password: JustM300
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+        webserver2:
+          ansible_host: <ip address provided>
+          ansible_user: Administrator
+          ansible_password: JustM300
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+    ```
+          
+> In the real world we would not want to store the windows credentials in plain text in our inventory file. We will deal with this issue in the vault lab.    
+    
+### Commit and Push Changes to GitHub
 
-```
-chmod 600 /home/ansible/.ssh/authorized_keys
-```
+1. In the sidebar, click on the "Source Control" icon (it looks like a branch).
+2. In the "Source Control" pane, review the changes you made to the file.
+3. Enter a commit message that describes the changes you made.
+4. Click the checkmark icon to commit the changes.
+5. Click on the "..." menu in the "Source Control" pane, and select "Push" to push the changes to GitHub.
 
-Confirm you can ssh as the `ansible` user from the control node to the managed nodes
+## Update the Ansible Control Host
 
-```
-ssh <IP of each node from the spreadsheet>
-```
-
-
-
-## Create a Simple Ansible Inventory
-
-Create and enter a working directory
-
-```
-mkdir /home/ansible/lab-setup && cd /home/ansible/lab-setup
-```
-
-Next, we'll create a simple Ansible inventory on the control node in `/home/ansible/lab-setup/inventory` containing `node1` and `node2`.
-
-On the control host:
-
-Enter the working directory
-```
-cd /home/ansible/lab-setup
-```
-```
-touch inventory 
-echo "node1 ansible_host=<IP of node1 from spreadsheet>" >> inventory 
-echo "node2 ansible_host=<IP of node2 from spreadsheet>" >> inventory 
-```
-
-
-
-## Configure `sudo` Access for Ansible
-
-Now, we'll configure sudo access for Ansible on `node1` and `node2` such that Ansible may use sudo for any command with no password prompt.
-
-Log in to each managed node as `ec2-user` and edit the `sudoers` file to contain appropriate access for the `ansible` user:
-
-```
-ssh ec2-user@node1 
-sudo visudo 
-```
-
-Add the following line to the file and save:
-
-```
-ansible    ALL=(ALL)       NOPASSWD: ALL 
-```
-
-Enter:
-
-```
-exit
-```
-
-Repeat these steps for `node2`
+1. Return to the connection to your Ansible control host in PuTTY on Windows Target 1.
+2. Navigate to the directory where you cloned repository.
+3. Run `git pull` to update the repository on the control host.
 
 ## Verify Each Managed Node Is Accessible
 
-Finally, we'll verify each managed node is able to be accessed by Ansible from the control node using the `ping` module.
+Here we will attempt to verify each managed node is able to be accessed by Ansible from the control node using the `win_ping` module.
 
-Redirect the output of a successful command to `/home/ansible/lab-setup/output`.
+To verify each node, run the following as the `ansible` user from the `Ansible Control` host:
 
-To verify each node, run the following as the `ansible` user from the control host:
-
-Enter the working directory:
-```
-cd /home/ansible/lab-setup
-```
+First we will clone the `ansible-working` repository you created earlier. Return to GitHub and copy the https url to your `ansible-working` repository. Clone the `ansible-working` repository to retrieve our `inventory_simple.yml` file.
 
 ```
-ansible -i inventory node1 -m ping 
-ansible -i inventory node2 -m ping 
+cd /home/ansible
+git clone https://github.com/<Your Account>/ansible-working.git
 ```
 
-To redirect output of a successful command to `/home/ansible/lab-setup/output`:
+Enter the working directory and ping the webservers:
 
 ```
-ansible -i inventory node1 -m ping > output 
+cd ansible-working
+ansible -i inventory_simple.yml webserver1 -m win_ping 
+ansible -i inventory_simple.yml webserver2 -m win_ping 
 ```
+
+> This will fail because we have not yet enabled WinRM or opened its ports on the firewall.
+  
+## Enable WinRM on Windows Targets
+
+Now, we'll configure WinRM for each windows node by creating a key using it to create a listener then opening the ports on the firewall.
+
+Perform the following steps in the RDP session for Windows Target 1 then repeat by opening another Remote Desktop Session to Windows Target 2.
+
+In the VS Code Explorer pane:
+
+1. Right Click in the explorer pane
+1. Select `New File`
+1. Name
+1. Name the new file ConfigureWindowsTargets.ps1
+1. Paste the code below into the file
+
+  ```
+  #Allow unencrypted connections
+  winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+  # Create self-signed certificate
+  $cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "cert:\LocalMachine\My"
+  # Get the certificate thumbprint
+  $thumbprint = $cert.Thumbprint
+  # Create a new listener using the certificate thumbprint
+  New-Item -Path WSMan:\localhost\Listener -Transport HTTPS -Address * -CertificateThumbPrint $thumbprint -Force
+  # Create a windows defender firewall inbound rule for ports 5985,5986
+  New-NetFirewallRule -DisplayName "Allow Ansible" -Direction Inbound -LocalPort 5985,5986 -Protocol TCP -Action Allow
+  # Turn on PowerShell Remoting
+  Enable-PSRemoting -Force
+  # Restart WinRM
+  Restart-Service winrm
+  #Repeat these steps for `Windows Target 2
+  ```
+    
+5. Execute the Script 
+1. Save, Commit and Sync the PowerShell Script with GitHub
+
+Repeat these steps on Windows Target 2 by opening a new Remote Desktop Session to Windows Target 2
+
+## Verify Each Managed Node Is Accessible (Again)
+
+Lets use the `win_ping` module again to enure that we can access the Windows Targets on their newly enabled listeners.
+To verify each node, use the win_ping module again:
+
+  ```
+  ansible -i inventory_simple.yml webserver1 -m win_ping 
+  ansible -i inventory_simple webserver2 -m win_ping 
+  ```
+
+  > This will succeed now because WinRM is enabled and its ports are opened on the firewall
+
+  To redirect output of a successful command to `/home/ansible/ansible-working/output`:
+
+  ```
+  ansible -i inventory webserver1 -m win_ping > output 
+  ```
 
 ## Conclusion
 
-Congratulations on completing this lab!
+  Congratulations on completing this lab!

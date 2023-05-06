@@ -1,98 +1,53 @@
-# Ad-Hoc Ansible Commands
+# Lab Instructions for Running Ad-hoc Commands using Ansible on a Windows Host
 
-## The Scenario
+In this lab, you will learn how to use Ansible to run ad-hoc commands against a Windows host. Ad-hoc commands are one-liners that you can use to perform specific tasks quickly and easily, without having to write a full playbook.
 
-Some consultants will be performing audits on a number of systems in our company's environment. We've got to create the user accounts listed in `/home/ansible/lab-ad-hoc/userlist.txt` and set up the provided public keys for their accounts. The security team has built a jump host for the consultants to access production systems and provided us with the full key-pair so we can set up and test the connection. All hosts in `dbsystems` will need that public key installed so the consultants may use key-pair authentication to access the systems. We must also ensure the `auditd` service is enabled and running on all systems.
+## Prerequisites
 
+Before starting this lab, you should have the following:
 
+- A Windows host that you can use as a target for Ansible commands
+- A control node with Ansible installed
 
-## Get Logged In and Setup Inventory
+## Step 1: Run Ad-hoc commands
+Run the following commands in the Ansible Control PuTTY window on Windows Target 1
 
-Log in to the server as `ec2-user` and sudo to the `ansible` user.
-```
-sudo su - ansible
-```
+1. Run the following ad-hoc command to check if the Windows host is reachable:
 
-### Prerequisites
+  ```bash
+  ansible windows_host -i inventory_simple.yml -m win_ping
+  ```
 
-Create and enter a working directory
+You should see a success message if the Windows host is reachable.
 
-```
-mkdir /home/ansible/lab-ad-hoc && cd /home/ansible/lab-ad-hoc
-```
+2. Run the following ad-hoc command to get information about the Windows host:
 
-Run the following commands to add the database servers to  `/home/ansible/lab-ad-hoc/inventory`:
+  ```bash
+  ansible windows_host -i inventory_simple.yml -m setup
+  ```
 
-```
-echo "[dbsystems]" >> inventory
-echo "db1 ansible_host=<IP of node1 from spreadsheet>" >> inventory 
-echo "db2 ansible_host=<IP of node2 from spreadsheet>" >> inventory 
-```
+This command will retrieve various information about the Windows host, including hardware and software details, network settings, and more.
 
+3. Run the following ad-hoc command to get a list of installed packages on the Windows host:
 
-
-## User Accounts File
-
-Copy the user accounts file from the lab directory to `/home/ansible/lab-ad-hoc/userlist.txt`
-
-```
-cp /home/ansible/ansible-best-practices/labs/ad-hoc/files/userlist.txt /home/ansible/lab-ad-hoc/userlist.txt
+```bash
+ansible windows_host -i inventory_simple.yml -m win_package -a "list=1"
 ```
 
+This command will retrieve a list of all installed packages on the Windows host.
 
+4. Run the following ad-hoc command to install a package on the Windows host:
 
-## Create the User Accounts 
-
-If we read the `userlist.txt` file in our work directory, we'll see `consultant` and `supervisor`. Those are the two new user accounts we have to create:
-
-```
-ansible -i inventory dbsystems -b -m user -a "name=consultant" 
-ansible -i inventory dbsystems -b -m user -a "name=supervisor" 
+```bash
+ansible windows_host -i inventory_simple.yml -m win_package -a "name=<package_name> state=present"
 ```
 
+Replace `<package_name>` with the name of the package you want to install.
 
+5. Run the following ad-hoc command to uninstall a package from the Windows host:
 
-## Create keys for users
-
-Create keys for the `consultant` and `supervisor` users.
-
-```
-mkdir -p keys/{consultant,supervisor}/.ssh
+```bash
+ansible windows_host -i inventory_simple.yml -m win_package -a "name=<package_name> state=absent"
 ```
 
-
-
-Generate SSH key for `consultant` and `supervisor` users.
-
-```
-ssh-keygen -f keys/consultant/.ssh/id_rsa
-ssh-keygen -f keys/supervisor/.ssh/id_rsa
-```
-
-Create the `authorized_keys` files
-
-```
-cat keys/consultant/.ssh/id_rsa.pub > keys/consultant/authorized_keys
-cat keys/supervisor/.ssh/id_rsa.pub > keys/supervisor/authorized_keys
-```
-
-
-
-## Place Key Files in the Correct Location, `/home/$USER/.ssh/authorized_keys`, on Hosts in `dbsystems`
-
-```
-ansible -i inventory dbsystems -b -m file -a "path=/home/consultant/.ssh state=directory owner=consultant group=consultant mode=0755" 
-ansible -i inventory dbsystems -b -m copy -a "src=/home/ansible/lab-ad-hoc/keys/consultant/authorized_keys dest=/home/consultant/.ssh/authorized_keys mode=0600 owner=consultant group=consultant" 
-ansible -i inventory dbsystems -b -m file -a "path=/home/supervisor/.ssh state=directory owner=supervisor group=supervisor mode=0755"
-ansible -i inventory dbsystems -b -m copy -a "src=/home/ansible/lab-ad-hoc/keys/supervisor/authorized_keys dest=/home/supervisor/.ssh/authorized_keys mode=0600 owner=supervisor group=supervisor" 
-```
-
-## Ensure `auditd` Is Enabled and Running on All Hosts
-
-```
-ansible -i inventory dbsystems -b -m service -a "name=auditd state=started enabled=yes" 
-```
-
-## Conclusion
-
-We can see, by watching output from those commands, that they all ran successfully. Congratulations!
+Replace `<package_name>` with the name of the package you want to uninstall.
