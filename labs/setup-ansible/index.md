@@ -52,6 +52,7 @@ Install boto3 and botocore
 pip3 install boto3 botocore
 ```
 
+Back on the Windows machine
 In the VS Code Explorer pane:
 
 1. Under the "ansible-working" repository
