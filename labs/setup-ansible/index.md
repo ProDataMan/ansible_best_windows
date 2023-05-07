@@ -119,10 +119,10 @@ Enter the working directory and ping the webservers:
 ```
 cd ansible-working
 ansible -i inventory_simple.yml webserver1 -m win_ping 
-ansible -i inventory_simple.yml webserver2 -m win_ping 
+ansible -i inventory_simple.yml webserver1 -m ping 
 ```
 
-> This will fail because we have not yet enabled WinRM or opened its ports on the firewall.
+> webserver1 will fail because we have not yet enabled WinRM or opened its ports on the firewall.
   
 ## Enable WinRM on the Windows Target
 
@@ -165,20 +165,24 @@ Open PowerShell and run
 
 ## Verify Each Managed Node Is Accessible (Again)
 
-Lets use the `win_ping` module again to enure that we can access the Windows Targets on their newly enabled listeners.
-To verify each node, use the win_ping module again:
+Lets use the `ping` and `win_ping` modules again to enure that we can access the Windows and Ubuntu targets on their newly enabled listeners.
 
   ```
   ansible -i inventory_simple.yml webserver1 -m win_ping 
-  ansible -i inventory_simple webserver2 -m win_ping 
+  ansible -i inventory_simple webserver2 -m ping 
   ```
 
-  > This will succeed now because WinRM is enabled and its ports are opened on the firewall
+  > This will succeed on the Windows target now because WinRM is enabled and its ports are opened on the firewall
 
   To redirect output of a successful command to `/home/ansible/ansible-working/output`:
 
   ```
-  ansible -i inventory webserver1 -m win_ping > output 
+  ansible -i inventory_simple.yaml webserver1 -m win_ping > output 
+  ```
+  
+  Confirm the output was redirected successfully. 
+  ```
+  cat output
   ```
 
 ## Conclusion
