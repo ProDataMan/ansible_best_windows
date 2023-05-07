@@ -46,27 +46,33 @@ Create an inventory file with the following content:
 ```yml
 all:
   hosts:
-    ansible_host: <IP or hostname of the IIS server>:
-    ansible_connection: winrm
-    ansible_winrm_transport: ntlm
-    ansible_winrm_server_cert_validation: ignore
-    ansible_user: <username with administrative privileges>
-    ansible_password: <password for the username>
+    win_node1:
+      ansible_host: <IP or hostname of the IIS server>:
+      ansible_connection: winrm
+      ansible_winrm_transport: ntlm
+      ansible_winrm_server_cert_validation: ignore
+      ansible_user: <username with administrative privileges>
+      ansible_password: <password for the username>
 ```
 Replace `<IP or hostname of the IIS server>` with the IP address or hostname of your IIS server, and replace `<username with administrative privileges>` and `<password for the username>` with the username and password of an account with administrative privileges on the IIS server.
 
 This format is great for a single host but imagine you have 10s or 100s of host repeating this information could get tiresome
 Try using variables instead:
 
-Create an inventory file with the following content:
+Update the inventory file with the following content:
 
 ```yml
 all:
   hosts:
-    ansible_host: <IP or hostname of the IIS server>:
-    ansible_host: <IP or hostname of the IIS server>:
-    ansible_host: <IP or hostname of the IIS server>:
-    ansible_host: <IP or hostname of the IIS server>:
+    win_node1:
+      ansible_host: <IP or hostname of the IIS server>:
+    win_node2:
+      ansible_host: <IP or hostname of the IIS server>:
+    win_node3:
+      ansible_host: <IP or hostname of the IIS server>:
+    win_node4:
+      ansible_host: <IP or hostname of the IIS server>:
+    win_node5:
     ansible_host: <IP or hostname of the IIS server>:    
   vars:
     ansible_connection: winrm
