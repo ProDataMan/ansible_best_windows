@@ -88,12 +88,12 @@ In the VS Code Explorer pane:
 2. In the "Source Control" pane, review the changes you made to the file.
 3. Enter a commit message that describes the changes you made.
 4. Click the checkmark icon to commit the changes.
-5. If you get an error about "user.email" and "user.name" not being set, do the following.
-    6. Open PowerShell and type: 
-        7. cd "C:\Program Files\Git\bin"
-        8. git config --global user.name "< your name >"
-        9. git config --global user.email "< your email address >"
-10. 
+If you get an error about "user.email" and "user.name" not being set, do the following. 
+
+1. Open PowerShell and type: 
+   1. `cd "C:\Program Files\Git\bin"`
+   2. `git config --global user.name "< your name >`
+   3. `git config --global user.email "< your email address >"`
 7. Click on the "..." menu in the "Source Control" pane, and select "Push" to push the changes to GitHub.
 8. If you are prompted, log into GitHub to authenticate.
 
