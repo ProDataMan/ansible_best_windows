@@ -32,13 +32,13 @@ Install Ansible using pip3
 pip3 install ansible
 ```
 
-Reboot Ubuntu to update the path and complete Ansible setup
+Log out and back into the Ubuntu VM to update the path and complete Ansible setup
 
 ```
-sudo reboot
+exit
 ```
 
-> You may need to reconnect to the Ubuntu server with Putty. From the PuTTY menu select Restart Session
+> You will need to reconnect to the Ubuntu server with Putty.
 
 Install Win RM
 
