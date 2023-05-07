@@ -61,24 +61,21 @@ In the VS Code Explorer pane:
 4. Name the new file 'inventory_simple.yml'
 5. Paste the code below into the file
 
-    ```
+    ```yaml
     ---
     webservers:
       hosts:
         webserver1:
-          ansible_host: <ip address provided>
+          ansible_host: <ip address provided for Windows Target>
           ansible_user: Administrator
           ansible_password: JustM300
           ansible_connection: winrm
           ansible_winrm_transport: ntlm
           ansible_winrm_server_cert_validation: ignore
         webserver2:
-          ansible_host: <ip address provided>
-          ansible_user: Administrator
-          ansible_password: JustM300
-          ansible_connection: winrm
-          ansible_winrm_transport: ntlm
-          ansible_winrm_server_cert_validation: ignore
+          ansible_host: <ip address provided for Ubuntu VM>
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: /home/ubuntu/.ssh/id_rsa    
     ```
           
 > In the real world we would not want to store the windows credentials in plain text in our inventory file. We will deal with this issue in the vault lab.    
@@ -127,11 +124,11 @@ ansible -i inventory_simple.yml webserver2 -m win_ping
 
 > This will fail because we have not yet enabled WinRM or opened its ports on the firewall.
   
-## Enable WinRM on Windows Targets
+## Enable WinRM on the Windows Target
 
-Now, we'll configure WinRM for each windows node by creating a key using it to create a listener then opening the ports on the firewall.
+Now, we'll configure WinRM for our windows node by creating a key using it to create a listener then opening the ports on the firewall.
 
-Perform the following steps in the RDP session for Windows Target 1 then repeat by opening another Remote Desktop Session to Windows Target 2.
+Perform the following steps in the RDP session for Windows Target 1.
 
 In the VS Code Explorer pane:
 
@@ -161,8 +158,10 @@ In the VS Code Explorer pane:
     
 5. Execute the Script 
 1. Save, Commit and Sync the PowerShell Script with GitHub
-
-Repeat these steps on Windows Target 2 by opening a new Remote Desktop Session to Windows Target 2
+Open PowerShell and run
+```powershell
+./ConfigureWindowsTargets.ps1
+```
 
 ## Verify Each Managed Node Is Accessible (Again)
 
