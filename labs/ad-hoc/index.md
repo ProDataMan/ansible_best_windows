@@ -28,26 +28,20 @@ You should see a success message if the Windows host is reachable.
 
 This command will retrieve various information about the Windows host, including hardware and software details, network settings, and more.
 
-3. Run the following ad-hoc command to get a list of installed packages on the Windows host:
+3. Run the following ad-hoc command to download the 7zip MSI package on the Windows host:
 
 ```bash
-ansible webserver1 -i inventory_simple.yml -m win_package -a "list=1"
+ ansible webserver1 -i inventory_simple.yml -m win_get_url -a "url=https://www.7-zip.org/a/7z2201-x64.msi dest=C:\gitrepos\7z.msi"
 ```
 
-This command will retrieve a list of all installed packages on the Windows host.
-
-4. Run the following ad-hoc command to install a package on the Windows host:
+4. Run the following ad-hoc command to install the 7zip package on the Windows host:
 
 ```bash
-ansible webserver1 -i inventory_simple.yml -m win_package -a "name=<package_name> state=present"
+ansible webserver1 -i inventory_simple.yml -m win_package -a "path=C:\gitrepos\7z.msi state=present"
 ```
-
-Replace `<package_name>` with the name of the package you want to install.
 
 5. Run the following ad-hoc command to uninstall a package from the Windows host:
 
 ```bash
-ansible webserver1 -i inventory_simple.yml -m win_package -a "name=<package_name> state=absent"
+ansible webserver1 -i inventory_simple.yml -m win_package -a "product_id=7-Zip state=absent"
 ```
-
-Replace `<package_name>` with the name of the package you want to uninstall.
