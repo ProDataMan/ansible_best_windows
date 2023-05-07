@@ -54,10 +54,11 @@ pip3 install boto3 botocore
 
 In the VS Code Explorer pane:
 
-1. Right Click in the explorer pane
-1. Select `New File`
-1. Name the new file 'inventory_simple.yml'
-1. Paste the code below into the file
+1. Under the "ansible-working" repository
+2. Right Click in the explorer pane
+3. Select `New File`
+4. Name the new file 'inventory_simple.yml'
+5. Paste the code below into the file
 
     ```
     ---
@@ -87,7 +88,14 @@ In the VS Code Explorer pane:
 2. In the "Source Control" pane, review the changes you made to the file.
 3. Enter a commit message that describes the changes you made.
 4. Click the checkmark icon to commit the changes.
-5. Click on the "..." menu in the "Source Control" pane, and select "Push" to push the changes to GitHub.
+5. If you get an error about "user.email" and "user.name" not being set, do the following.
+    6. Open PowerShell and type: 
+        7. cd "C:\Program Files\Git\bin"
+        8. git config --global user.name "< your name >"
+        9. git config --global user.email "< your email address >"
+10. 
+7. Click on the "..." menu in the "Source Control" pane, and select "Push" to push the changes to GitHub.
+8. If you are prompted, log into GitHub to authenticate.
 
 ## Update the Ansible Control Host
 
