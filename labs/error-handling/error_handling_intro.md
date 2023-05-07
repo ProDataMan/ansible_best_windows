@@ -9,20 +9,23 @@ If the report is collected, the playbook should write and edit the file to repla
 
 ### Prerequisites
 
-Log in to the Control Node as `ec2-user` and sudo to the `ansible` user.
- ```
- sudo su - ansible
- ```
-
- Create and enter the working directory
-
- ```
- mkdir /home/ansible/lab-error-handling && cd /home/ansible/lab-error-handling
- ```
-
-
-
 Create a playbook named `report.yml`
+
+In the VS Code Explorer pane:
+
+Right Click in the explorer pane
+
+Select New Folder
+
+Name the new folder 'error-handling'
+
+Right Click on the `error-handling` folder
+
+Select New File
+
+Name the new file 'report.yml'
+
+Paste the code below into the file
 
 First, we'll specify our **host** and **tasks** (**name**, and **debug** message):
 
@@ -33,15 +36,19 @@ First, we'll specify our **host** and **tasks** (**name**, and **debug** message
     - name: download transaction_list
       get_url:
         url: https://bit.ly/3dtJtR7
-        dest: /home/ansible/lab-error-handling/transaction_list
+        dest: /home/ubuntu/ansible-working/error-handling/transaction_list
     - debug: msg="File downloaded"
 ```
+## Copy files the maint folder from class files
 
+In windows Explorer copy the `c:\GitRepos\ansible-best-practices-windows\error-handling\maint\` folder to `c:\GitRepos\ansible-working\error-handling\maint\`
 
 
 ### Add connection failure logic
 
 We need to reconfigure a bit here, adding a **block** keyword and a **rescue**, in case the URL we're reaching out to is down:
+
+In Visual Studio Code edit the report.yml file to include the updates below
 
 ```yaml
 ---
@@ -51,7 +58,7 @@ We need to reconfigure a bit here, adding a **block** keyword and a **rescue**, 
       block:
         - get_url:
             url: https://bit.ly/3dtJtR7
-            dest: /home/ansible/lab-error-handling/transaction_list
+            dest: /home/ubuntu/ansible-working/error-handling/transaction_list
         - debug: msg="File downloaded"
       rescue:
         - debug: msg="Site appears to be down.  Try again later."
@@ -63,6 +70,8 @@ We need to reconfigure a bit here, adding a **block** keyword and a **rescue**, 
 
 An **always** block here will let us know that the playbook at least made an attempt to download the file:
 
+In Visual Studio Code edit the report.yml file to include the updates below
+
 ```yaml
 ---
 - hosts: localhost
@@ -71,7 +80,7 @@ An **always** block here will let us know that the playbook at least made an att
       block:
         - get_url:
             url: https://bit.ly/3dtJtR7
-            dest: /home/ansible/lab-error-handling/transaction_list
+            dest: /home/ubuntu/ansible-working/error-handling/transaction_list
         - debug: msg="File downloaded"
       rescue:
         - debug: msg="Site appears to be down.  Try again later."
@@ -83,6 +92,8 @@ An **always** block here will let us know that the playbook at least made an att
 
 We can use the **replace** module for this task, and we'll sneak it in between the **get_url** and first **debug** tasks.
 
+In Visual Studio Code edit the report.yml file to include the updates below
+
 ```yaml
 ---
 - hosts: localhost
@@ -91,9 +102,9 @@ We can use the **replace** module for this task, and we'll sneak it in between t
       block:
         - get_url:
             url: https://bit.ly/3dtJtR7
-            dest: /home/ansible/lab-error-handling/transaction_list
+            dest: /home/ubuntu/ansible-working/error-handling/transaction_list
         - replace:
-            path: /home/ansible/lab-error-handling/transaction_list
+            path: /home/ubuntu/ansible-working/error-handling/transaction_list
             regexp: "#BLANKLINE"
             replace: '\n'
         - debug: msg="File downloaded"
@@ -103,52 +114,37 @@ We can use the **replace** module for this task, and we'll sneak it in between t
         - debug: msg="Attempt completed."
 ```
 
+### Commit and Push Changes to GitHub
+
+1. In the sidebar, click on the "Source Control" icon (it looks like a branch).
+2. In the "Source Control" pane, review the changes you made to the file.
+3. Enter a commit message that describes the changes you made.
+4. Click the checkmark icon to commit the changes.
+5. Click on the "..." menu in the "Source Control" pane, and select "Push" to push the changes to GitHub.
+
+## Update the Ansible Control Host
+
+1. Return to the connection to your Ansible control host in PuTTY on Windows Target 1.
+2. Navigate to the directory where you cloned repository.
+3. Run `git pull` to update the repository on the control host.
+
 ## Run the playbook 
 
 ```
-ansible-playbook /home/ansible/lab-error-handling/report.yml
+ansible-playbook /home/ubuntu/ansible-working/error-handling/report.yml
 ```
 
 If all went well, we can read the downloaded text file:
 
 ```
-cat /home/ansible/lab-error-handling/transaction_list
+cat /home/ubuntu/ansible-working/error-handling/transaction_list
 ```
-
-
 
 After confirming the playbook successfully downloads and updates the `transaction_list` file, pull the latest changes from the repository, and run the `break_stuff.yml` playbook in the `maint` directory to simulate an unreachable host. 
 
-```
-cd ~/ansible-best-practices && git pull
-```
-
-Add the `ansible` user to the `sudoers` file. 
-
-Exit to the `ec2-user` account
-```
-exit
-```
-
-As `ec2-user` run `visudo`   
-
-```
-sudo visudo
-```
-
-Add the following: 
-```
-ansible    ALL=(ALL)       NOPASSWD: ALL
-```
-
-Change back to the `ansible` user. 
-
-```
-sudo su - ansible
-```
 
 ```sh
-ansible-playbook ~/ansible-best-practices/labs/error-handling/maint/break_stuff.yml --tags service_down
+ansible-playbook ~/ansible-working/lab-error-handling/maint/break_stuff.yml --tags service_down
 ```
 
 Confirm the host is no longer reachable 
@@ -167,7 +163,7 @@ ansible-playbook ~/ansible-best-practices/labs/error-handling/maint/break_stuff.
 ```
 
 ```
-ansible-playbook /home/ansible/lab-error-handling/report.yml
+ansible-playbook /home/ubuntu/lab-error-handling/report.yml
 ```
 
 
