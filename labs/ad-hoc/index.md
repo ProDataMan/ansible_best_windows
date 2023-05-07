@@ -15,7 +15,7 @@ Run the following commands in the Ansible Control PuTTY window on Windows Target
 1. Run the following ad-hoc command to check if the Windows host is reachable:
 
   ```bash
-  ansible windows_host -i inventory_simple.yml -m win_ping
+  ansible webserver1 -i inventory_simple.yml -m win_ping
   ```
 
 You should see a success message if the Windows host is reachable.
@@ -23,7 +23,7 @@ You should see a success message if the Windows host is reachable.
 2. Run the following ad-hoc command to get information about the Windows host:
 
   ```bash
-  ansible windows_host -i inventory_simple.yml -m setup
+  ansible webserver1 -i inventory_simple.yml -m setup
   ```
 
 This command will retrieve various information about the Windows host, including hardware and software details, network settings, and more.
@@ -31,7 +31,7 @@ This command will retrieve various information about the Windows host, including
 3. Run the following ad-hoc command to get a list of installed packages on the Windows host:
 
 ```bash
-ansible windows_host -i inventory_simple.yml -m win_package -a "list=1"
+ansible webserver1 -i inventory_simple.yml -m win_package -a "list=1"
 ```
 
 This command will retrieve a list of all installed packages on the Windows host.
@@ -39,7 +39,7 @@ This command will retrieve a list of all installed packages on the Windows host.
 4. Run the following ad-hoc command to install a package on the Windows host:
 
 ```bash
-ansible windows_host -i inventory_simple.yml -m win_package -a "name=<package_name> state=present"
+ansible webserver1 -i inventory_simple.yml -m win_package -a "name=<package_name> state=present"
 ```
 
 Replace `<package_name>` with the name of the package you want to install.
@@ -47,7 +47,7 @@ Replace `<package_name>` with the name of the package you want to install.
 5. Run the following ad-hoc command to uninstall a package from the Windows host:
 
 ```bash
-ansible windows_host -i inventory_simple.yml -m win_package -a "name=<package_name> state=absent"
+ansible webserver1 -i inventory_simple.yml -m win_package -a "name=<package_name> state=absent"
 ```
 
 Replace `<package_name>` with the name of the package you want to uninstall.
