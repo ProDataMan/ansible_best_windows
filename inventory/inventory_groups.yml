@@ -1,0 +1,16 @@
+all:
+  children:
+    linux:
+      hosts:
+        ansible_control:
+          ansible_host: 192.168.1.100
+        linux_target:
+          ansible_host: 192.168.1.101
+    windows:
+      children:
+        webservers:
+          hosts:
+            webserver1:
+              ansible_host: 192.168.1.102
+            webserver2:
+              ansible_host: 192.168.1.103
