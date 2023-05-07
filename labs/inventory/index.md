@@ -108,28 +108,20 @@ ansible all -i <path to inventory file> -m <module name> -a "<module arguments>"
 
 Replace `<path to inventory file>` with the path to your inventory file, `<module name>` with the name of the Ansible module you want to use (e.g. `win_command`), and `<module arguments>` with the arguments for the module.
 
-For example, to run the `win_command` module to execute the `dir` command on the IIS server, use the following command:
+For example, to run the `win_command` module to execute the `whoami` command on the IIS server, use the following command:
 
 ```bash
-ansible all -i inventory.yml -m win_command -a "cmd='dir'"
+ansible all -i inventory_vars.yml -m win_command -a "whoami"
 ```
 Or `win_feature` to install the `web-server` feature (IIS)
 
 ```
-ansible all - inventory.yml -m win_feature -a "Web-Server"
+ansible all - inventory_vars.yml -m win_feature -a "Web-Server"
 ```
 ### Running Playbooks
 
-To run a playbook on the IIS server, create a YAML file with the playbook content, and run the following command:
-
-```bash
-ansible-playbook <path to playbook YAML file> -i <path to inventory file>
-```
-
-Replace `<path to playbook YAML file>` with the path to your playbook YAML file, and `<path to inventory file>` with the path to your inventory file.
-
-For example, to create a playbook that installs IIS using the `win_feature` module, create a YAML file with the following content:
-Remember to create, save and synce the file in VS Code on Windows Target 1
+To create a playbook that installs IIS using the `win_feature` module, create a YAML file with the following content:
+Remember to create, save and sync the file in VS Code on Windows Target 1
 
 In the VS Code Explorer pane:
 
@@ -168,7 +160,11 @@ ansible-playbook install_iis.yml -i inventory_vars.yml
 ```
 
 This will install IIS on the target server.
+To confirm the web server was installed open a browser and visit
+```
+http://localhost
+```
 
 ### Conclusion
 
-By following these instructions, you should now have an IIS server provisioned and managed by Ansible on a Windows host.
+By following these instructions, you now have an IIS server provisioned and managed by Ansible on a Windows host.
