@@ -5,8 +5,8 @@ The Password is
 `JustM300`
 
 ## MacOS 
-Download `Remote Desktop` from the `Microsoft`
-Connect to remote computer user ip address provided
+Download `Microsoft Remote Desktop` from the Apple App Store
+Connect to remote computer using ip address provided
 
 ## Windows 
 Connect to remote computer with Remote Desktop with ip address provided
