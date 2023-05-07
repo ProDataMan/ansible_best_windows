@@ -52,14 +52,6 @@ all:
     ansible_winrm_server_cert_validation: ignore
     ansible_user: <username with administrative privileges>
     ansible_password: <password for the username>
-    
-    ansible_host: <IP or hostname of the IIS server>:
-    ansible_connection: winrm
-    ansible_winrm_transport: ntlm
-    ansible_winrm_server_cert_validation: ignore
-    ansible_user: <username with administrative privileges>
-    ansible_password: <password for the username>
-
 ```
 Replace `<IP or hostname of the IIS server>` with the IP address or hostname of your IIS server, and replace `<username with administrative privileges>` and `<password for the username>` with the username and password of an account with administrative privileges on the IIS server.
 
